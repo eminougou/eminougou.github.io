@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>My Web Map</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css" />
+    <script src="https://mapzen.com/js/mapzen.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <style>
+      html, body { margin: 0; padding: 0; }
+      #map { height: 100%; width: 100%; position: absolute; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <iframe src="map"></iframe>
+    <script>
+      var map = L.Mapzen.map('map', {
+        center: [40.7721, -73.8897],
+        zoom: 11.0417,
+        tangramOptions: {
+          scene: 'https://mapzen.com/api/scenes/51055/633/resources/basic.yaml'
+        }
+      });
+
+      var popup = L.popup();
+
+
+      // ADD SELECTION EVENTS
+      function onMapClick(selection) {
+        if (selection.feature) {
+          var latlng = selection.leaflet_event.latlng;
+          var label = selection.feature.properties.Change1Q16;
+          showPopup(latlng, label);
+        }
+      }
+
+      function showPopup(latlng, label) {
+        popup
+          .setLatLng(latlng)
+          .setContent('<p>' + "Change from 1Q16 to 1Q17: "+ label + "%"+'</p>')
+          .openOn(map);        
+      }
+
+      // ADD TANGRAMLOADED LISTENER
+      var scene;
+      map.on('tangramloaded', function(e) {
+        var tangramLayer = e.tangramLayer;
+        scene = tangramLayer.scene;
+
+        tangramLayer.setSelectionEvents({
+          click: onMapClick
+        });
+
+      });
+
+    </script>
+  </body>
+</html>
